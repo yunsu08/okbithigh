@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>옥빛 성적 모의 주식 프로그램</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .stock-info, .actions {
+            margin-bottom: 20px;
+        }
+        .stock-info h2, .actions h2 {
+            color: #555;
+        }
+        .balance, .stock-price {
+            font-size: 18px;
+            color: #444;
+        }
+        .actions input {
+            padding: 10px;
+            margin: 5px;
+        }
+        .message {
+            margin-top: 10px;
+            color: green;
+        }
+        .admin-section {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="https://search.pstatic.net/sunny/?src=https%3A%2F%2Fyt3.googleusercontent.com%2F0jsPFdrWQvA6HczK7eXPu86Zqbxlt2xLx5F5S1TAEHMmCQ_w11lEjXPkVnW1MsjGVFLznVLeiQ%3Ds900-c-k-c0x00ffffff-no-rj&type=a340" style="display: block; margin: 0 auto;" height="100px" width="100px" />
+
+    <h1>옥빛 성적 모의 주식 프로그램</h1>
+    <div class="stock-info">
+        <h2>주식 정보</h2>
+        <p class="stock-price">현재 주식 가격: <span id="stockPrice">1000</span>옥빛코인</p>
+    </div>
+
+    <div class="balance">
+        <h2>잔고: <span id="balance">100000</span>옥빛코인</h2>
+        <h2>보유 주식: <span id="ownedStocks">0</span>주</h2>
+    </div>
+
+    <div class="actions">
+        <h2>주식 거래</h2>
+        <input type="number" id="amount" placeholder="수량" />
+        <button onclick="buyStock()">구매</button>
+        <button onclick="sellStock()">판매</button>
+    </div>
+
+    <div class="admin-section">
+        <h2>관리자 주식 가격 변경</h2>
+        <input type="password" id="adminPassword" placeholder="관리자 비밀번호" />
+        <input type="number" id="newStockPrice" placeholder="새 주식 가격 입력" />
+        <button onclick="setStockPrice()">주식 가격 변경</button>
+    </div>
+
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+    let balance = 100000;
+    let ownedStocks = 0;
+    let stockPrice = 1000; 
+    const adminPassword = "081118"; 
+
+    
+    function setStockPrice() {
+        const enteredPassword = document.getElementById('adminPassword').value;
+        const newPrice = parseInt(document.getElementById('newStockPrice').value);
+
+        if (enteredPassword !== adminPassword) {
+            alert('관리자 비밀번호가 틀렸습니다.');
+            return;
+        }
+
+        if (isNaN(newPrice) || newPrice <= 0) {
+            alert('유효한 주식 가격을 입력하세요.');
+        } else {
+            stockPrice = newPrice;
+            document.getElementById('stockPrice').innerText = stockPrice;
+            document.getElementById('message').innerText = '주식 가격이 ' + stockPrice + '옥빛코인으로 변경되었습니다.';
+        }
+    }
+
+    // 주식을 구매하는 함수
+    function buyStock() {
+        const amount = parseInt(document.getElementById('amount').value);
+        if (isNaN(amount) || amount <= 0) {
+            alert('유효한 수량을 입력하세요.');
+            return;
+        }
+
+        const totalCost = stockPrice * amount;
+
+        if (totalCost > balance) {
+            document.getElementById('message').innerText = '잔고가 부족합니다.';
+        } else {
+            balance -= totalCost;
+            ownedStocks += amount;
+            document.getElementById('message').innerText = amount + '주를 구매했습니다.';
+        }
+        updateUI();
+    }
+
+   
+    function sellStock() {
+        const amount = parseInt(document.getElementById('amount').value);
+        if (isNaN(amount) || amount <= 0) {
+            alert('유효한 수량을 입력하세요.');
+            return;
+        }
+
+        if (amount > ownedStocks) {
+            document.getElementById('message').innerText = '보유 주식이 부족합니다.';
+        } else {
+            const totalIncome = stockPrice * amount;
+            balance += totalIncome;
+            ownedStocks -= amount;
+            document.getElementById('message').innerText = amount + '주를 판매했습니다.';
+        }
+        updateUI();
+    }
+
+    
+    function updateUI() {
+        document.getElementById('balance').innerText = balance;
+        document.getElementById('ownedStocks').innerText = ownedStocks;
+    }
+</script>
+
+</body>
+</html>
